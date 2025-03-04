@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${isEdit ? 'Edit Contact' : 'Add New Contact'}">Contact Form</title>
+    <style>
+        .form-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .form-card .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-radius: 10px 10px 0 0;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+        }
+        .btn-primary {
+            background-color: #4e73df;
+            border-color: #4e73df;
+        }
+        .btn-primary:hover {
+            background-color: #2e59d9;
+            border-color: #2653d4;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- Page Header -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800" th:text="${isEdit ? 'Edit Contact' : 'Add New Contact'}">Contact Form</h1>
+        <a href="/contacts" class="d-none d-sm-inline-block btn btn-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50 me-2"></i>Back to Contacts
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card form-card mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-user-edit me-2"></i>
+                        <span th:text="${isEdit ? 'Edit Contact Details' : 'New Contact Information'}">Contact Information</span>
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <!-- Error Alert -->
+                    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <span th:text="${error}">Error message</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/contacts/[[${isEdit ? contact.resourceName : ''}]]" 
+                          th:object="${contact}" method="post" class="needs-validation" novalidate>
+                        
+                        <!-- Hidden fields -->
+                        <input type="hidden" th:field="*{resourceName}" />
+                        <input type="hidden" th:if="${isEdit}" name="_method" value="put" />
+
+                        <!-- Name Fields -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}"
+                                       th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">
+                                    Please enter a first name.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="familyName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="familyName" th:field="*{familyName}">
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" th:field="*{email}"
+                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
+                                    Please enter a valid email address.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                <input type="tel" class="form-control" id="phone" th:field="*{phone}"
+                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
+                                       pattern="[0-9+\-\s()]*">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
+                                    Please enter a valid phone number.
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Format: +1234567890 or (123) 456-7890</small>
+                        </div>
+
+                        <!-- Form Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/contacts" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>
+                                <span th:text="${isEdit ? 'Update Contact' : 'Save Contact'}">Save Contact</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form Validation Script -->
+<th:block layout:fragment="scripts">
+    <script>
+        // Bootstrap form validation
+        (function () {
+            'use strict'
+            
+            // Fetch all forms we want to apply validation to
+            var forms = document.querySelectorAll('.needs-validation')
+            
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+        })();
+    </script>
+</th:block>
+</body>
+</html>

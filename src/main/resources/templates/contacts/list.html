@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Google Contacts</title>
+    <style>
+        .contact-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        }
+        .contact-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: #e9ecef;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #6c757d;
+            margin-right: 1rem;
+        }
+        .contact-info {
+            flex: 1;
+        }
+        .contact-actions {
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .contact-card:hover .contact-actions {
+            opacity: 1;
+        }
+        .stats-card {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .contact-count {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4e73df;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Page Header -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">My Google Contacts</h1>
+            <div>
+                <a href="/contacts/new" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Contact
+                </a>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <span th:text="${message}">Success message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <span th:text="${error}">Error message</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stats-card h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Contacts</div>
+                                <div class="contact-count" th:text="${contactCount}">0</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-address-book fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Section -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <form class="d-flex" action="/contacts" method="get">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-primary"></i>
+                                </span>
+                                <input type="search" name="search" class="form-control border-start-0" 
+                                       placeholder="Search contacts by name, email or phone..." th:value="${param.search}">
+                                <button type="submit" class="btn btn-primary">
+                                    Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <a href="/contacts/new" class="btn btn-success d-block d-md-inline-block">
+                            <i class="fas fa-plus me-2"></i>Add New Contact
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts List -->
+        <div class="row" th:if="${not #lists.isEmpty(contacts)}">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            <div th:each="contact : ${contacts}" class="list-group-item p-3 contact-card">
+                                <div class="d-flex align-items-center">
+                                    <div class="contact-avatar" th:text="${#strings.substring(contact.name,0,1).toUpperCase()}">A</div>
+                                    <div class="contact-info">
+                                        <h5 class="mb-1">
+                                            <span th:text="${contact.name}">Contact Name</span>
+                                        </h5>
+                                        <small class="text-muted" th:text="${'ID: ' + contact.resourceName}">Resource ID</small>
+                                        <div class="d-flex flex-wrap">
+                                            <div class="me-4 mb-2" th:if="${contact.email}">
+                                                <i class="fas fa-envelope text-muted me-2"></i>
+                                                <a th:href="'mailto:' + ${contact.email}" th:text="${contact.email}" 
+                                                   class="text-decoration-none">email@example.com</a>
+                                            </div>
+                                            <div class="me-4 mb-2" th:if="${contact.phone}">
+                                                <i class="fas fa-phone text-muted me-2"></i>
+                                                <a th:href="'tel:' + ${contact.phone}" th:text="${contact.phone}"
+                                                   class="text-decoration-none">+1234567890</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="contact-actions ms-auto">
+                                        <a th:href="@{/contacts/{id}/edit(id=${contact.resourceName})}" 
+                                           class="btn btn-sm btn-outline-primary me-2">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="/contacts/[[${contact.resourceName}]]" 
+                                              method="post" 
+                                              style="display:inline;"
+                                              onsubmit="return confirm('Are you sure you want to delete this contact?');">
+                                            <input type="hidden" name="_method" value="delete" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(contacts)}" class="text-center py-5">
+            <div class="card shadow-sm">
+                <div class="card-body py-5">
+                    <i class="fas fa-address-book fa-4x text-muted mb-3"></i>
+                    <h3 class="mt-3">No Contacts Found</h3>
+                    <p class="text-muted" th:if="${param.search}">
+                        No contacts match your search criteria. Try a different search or add a new contact.
+                    </p>
+                    <p class="text-muted" th:unless="${param.search}">
+                        Your Google contacts list is empty. Start by adding your first contact!
+                    </p>
+                    <a href="/contacts/new" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus me-2"></i>Add New Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
