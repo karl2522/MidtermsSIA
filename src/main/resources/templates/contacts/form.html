@@ -7,25 +7,195 @@
     <style>
         .form-card {
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            background: white;
         }
         .form-card .card-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            border-radius: 10px 10px 0 0;
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            padding: 1.5rem;
+            color: white;
+        }
+        .form-card .card-header h6 {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        .form-card .card-body {
+            padding: 2rem;
+        }
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
         }
         .form-control:focus, .form-select:focus {
             border-color: #4e73df;
             box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
         }
-        .btn-primary {
-            background-color: #4e73df;
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        .entry-row {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        .entry-row:hover {
+            background: #fff;
             border-color: #4e73df;
+            box-shadow: 0 2px 8px rgba(78, 115, 223, 0.15);
+        }
+        .entry-row .form-control,
+        .entry-row .form-select {
+            background-color: #fff;
+        }
+        .remove-entry {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fee2e2;
+            border: none;
+            color: #dc2626;
+            transition: all 0.2s ease;
+        }
+        .remove-entry:hover {
+            background-color: #fecaca;
+            color: #b91c1c;
+        }
+        .btn-add-entry {
+            color: #4e73df;
+            background: #eef2ff;
+            border: 1px dashed #4e73df;
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+        .btn-add-entry:hover {
+            background: #dbe4ff;
+            transform: translateY(-2px);
+        }
+        .form-buttons {
+            border-top: 1px solid #e9ecef;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: #4e73df;
+            border: none;
         }
         .btn-primary:hover {
-            background-color: #2e59d9;
-            border-color: #2653d4;
+            background: #2e59d9;
+            box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+        }
+        .invalid-feedback {
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        #emailEntries, #phoneEntries {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        #emailEntries::-webkit-scrollbar,
+        #phoneEntries::-webkit-scrollbar {
+            width: 6px;
+        }
+        #emailEntries::-webkit-scrollbar-track,
+        #phoneEntries::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        #emailEntries::-webkit-scrollbar-thumb,
+        #phoneEntries::-webkit-scrollbar-thumb {
+            background: #c5c5c5;
+            border-radius: 3px;
+        }
+        #emailEntries::-webkit-scrollbar-thumb:hover,
+        #phoneEntries::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .entry-counter {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-left: 0.5rem;
+            font-weight: normal;
+        }
+
+        /* User Dropdown Styles */
+        .dropdown-menu {
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            padding: 0.5rem 0;
+        }
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #3a3b45;
+            transition: all 0.2s ease-in-out;
+        }
+        .dropdown-item:hover {
+            background-color: #f8f9fc;
+            color: #4e73df;
+        }
+        .dropdown-item i {
+            width: 1rem;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-top: 1px solid #eaecf4;
+        }
+        #userDropdown {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            border: 1px solid #e3e6f0;
+            background: white;
+        }
+        #userDropdown:hover {
+            background: #f8f9fc;
+            border-color: #4e73df;
+        }
+        #userDropdown i {
+            font-size: 1.1rem;
+            color: #4e73df;
+        }
+        .dropdown-menu-end {
+            right: 0;
+            left: auto;
         }
     </style>
 </head>
@@ -56,7 +226,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
 
-                    <form action="/contacts/[[${isEdit ? contact.resourceName : ''}]]" 
+                    <form th:action="@{${isEdit ? '/contacts/people/' + #strings.substringAfter(contact.resourceName, 'people/') : '/contacts'}}" 
                           th:object="${contact}" method="post" class="needs-validation" novalidate>
                         
                         <!-- Hidden fields -->
@@ -79,36 +249,75 @@
                             </div>
                         </div>
 
-                        <!-- Contact Information -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                <input type="email" class="form-control" id="email" th:field="*{email}"
-                                       th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" required>
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">
-                                    Please enter a valid email address.
+                        <!-- Email Addresses -->
+                        <div class="mb-4">
+                            <label class="form-label d-flex align-items-center">
+                                Email Addresses
+                                <span class="entry-counter" id="emailCounter">
+                                    (<span>1</span> entries)
+                                </span>
+                            </label>
+                            <div id="emailEntries" class="mb-2">
+                                <div th:each="email, stat : *{emails}" class="entry-row">
+                                    <div class="row g-2">
+                                        <div class="col-md-8">
+                                            <input type="email" class="form-control" 
+                                                   th:field="*{emails[__${stat.index}__].email}"
+                                                   placeholder="Email address" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select" th:field="*{emails[__${stat.index}__].type}">
+                                                <option th:each="type : ${T(org.google.model.Contact.EmailType).values()}"
+                                                        th:value="${type}" th:text="${type}">HOME</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger btn-sm remove-entry">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
+                            <button type="button" class="btn btn-add-entry" id="addEmail">
+                                <i class="fas fa-plus me-2"></i>Add New Email Address
+                            </button>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                <input type="tel" class="form-control" id="phone" th:field="*{phone}"
-                                       th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''"
-                                       pattern="[0-9+\-\s()]*">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">
-                                    Please enter a valid phone number.
+                        <!-- Phone Numbers -->
+                        <div class="mb-4">
+                            <label class="form-label d-flex align-items-center">
+                                Phone Numbers
+                                <span class="entry-counter" id="phoneCounter">
+                                    (<span>1</span> entries)
+                                </span>
+                            </label>
+                            <div id="phoneEntries" class="mb-2">
+                                <div th:each="phone, stat : *{phones}" class="entry-row">
+                                    <div class="row g-2">
+                                        <div class="col-md-8">
+                                            <input type="tel" class="form-control"
+                                                   th:field="*{phones[__${stat.index}__].number}"
+                                                   placeholder="Phone number" pattern="[0-9+\-\s()]*">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-select" th:field="*{phones[__${stat.index}__].type}">
+                                                <option th:each="type : ${T(org.google.model.Contact.PhoneType).values()}"
+                                                        th:value="${type}" th:text="${type}">MOBILE</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-danger btn-sm remove-entry">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <small class="form-text text-muted">Format: +1234567890 or (123) 456-7890</small>
+                            <button type="button" class="btn btn-add-entry" id="addPhone">
+                                <i class="fas fa-plus me-2"></i>Add New Phone Number
+                            </button>
                         </div>
 
                         <!-- Form Buttons -->
-                        <div class="d-flex justify-content-between mt-4">
-                            <a href="/contacts" class="btn btn-secondary">
+                        <div class="form-buttons d-flex justify-content-between mt-4">
+                            <a href="/contacts" class="btn btn-light">
                                 <i class="fas fa-times me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
@@ -123,29 +332,111 @@
     </div>
 </div>
 
-<!-- Form Validation Script -->
+<!-- Form Validation and Dynamic Fields Script -->
 <th:block layout:fragment="scripts">
     <script>
         // Bootstrap form validation
         (function () {
             'use strict'
-            
-            // Fetch all forms we want to apply validation to
             var forms = document.querySelectorAll('.needs-validation')
-            
-            // Loop over them and prevent submission
             Array.prototype.slice.call(forms)
                 .forEach(function (form) {
                     form.addEventListener('submit', function (event) {
                         if (!form.checkValidity()) {
-                            event.preventDefault();
-                            event.stopPropagation();
+                            event.preventDefault()
+                            event.stopPropagation()
                         }
-                        
-                        form.classList.add('was-validated');
-                    }, false);
-                });
-        })();
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Update entry counters
+        function updateEntryCounter(type) {
+            const container = type === 'email' ? 'emailEntries' : 'phoneEntries';
+            const counter = type === 'email' ? 'emailCounter' : 'phoneCounter';
+            const count = document.getElementById(container).children.length;
+            document.querySelector(`#${counter} span`).textContent = count;
+        }
+
+        // Initialize counters
+        updateEntryCounter('email');
+        updateEntryCounter('phone');
+
+        // Dynamic email entries
+        document.getElementById('addEmail').addEventListener('click', function() {
+            const emailEntries = document.getElementById('emailEntries');
+            const index = emailEntries.children.length;
+            const template = `
+                <div class="entry-row">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <input type="email" name="emails[${index}].email" class="form-control" 
+                                   placeholder="Email address" required>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="emails[${index}].type" class="form-select">
+                                <option value="HOME">HOME</option>
+                                <option value="WORK">WORK</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-entry">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            emailEntries.insertAdjacentHTML('beforeend', template);
+            updateEntryCounter('email');
+            
+            // Focus on the new email input
+            const newInput = emailEntries.lastElementChild.querySelector('input[type="email"]');
+            newInput.focus();
+        });
+
+        // Dynamic phone entries
+        document.getElementById('addPhone').addEventListener('click', function() {
+            const phoneEntries = document.getElementById('phoneEntries');
+            const index = phoneEntries.children.length;
+            const template = `
+                <div class="entry-row">
+                    <div class="row g-2">
+                        <div class="col-md-8">
+                            <input type="tel" name="phones[${index}].number" class="form-control"
+                                   placeholder="Phone number" pattern="[0-9+\\-\\s()]*">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="phones[${index}].type" class="form-select">
+                                <option value="MOBILE">MOBILE</option>
+                                <option value="HOME">HOME</option>
+                                <option value="WORK">WORK</option>
+                                <option value="OTHER">OTHER</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm remove-entry">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            phoneEntries.insertAdjacentHTML('beforeend', template);
+            updateEntryCounter('phone');
+            
+            // Focus on the new phone input
+            const newInput = phoneEntries.lastElementChild.querySelector('input[type="tel"]');
+            newInput.focus();
+        });
+
+        // Remove entry functionality with counter update
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-entry')) {
+                const entry = e.target.closest('.entry-row');
+                const isEmail = entry.closest('#emailEntries') !== null;
+                entry.remove();
+                updateEntryCounter(isEmail ? 'email' : 'phone');
+            }
+        });
     </script>
 </th:block>
 </body>

@@ -80,18 +80,19 @@ public class ContactController {
         }
     }
 
-    @GetMapping("/{id}/edit")
+    @GetMapping("/people/{id}/edit")
     public String showEditForm(
             @PathVariable String id,
             @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient,
             Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            log.info("Loading edit form for contact: {}", id);
-            Contact contact = contactsService.getContact(authorizedClient, id);
+            String resourceName = "people/" + id;
+            log.info("Loading edit form for contact: {}", resourceName);
+            Contact contact = contactsService.getContact(authorizedClient, resourceName);
             
             if (contact == null) {
-                log.error("Contact not found with ID: {}", id);
+                log.error("Contact not found with ID: {}", resourceName);
                 redirectAttributes.addFlashAttribute("error", "Contact not found. Please try again.");
                 return "redirect:/contacts";
             }
@@ -106,48 +107,40 @@ public class ContactController {
         }
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/people/{id}")
     public String updateContact(
             @PathVariable String id,
             @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient,
             @ModelAttribute Contact contact,
             RedirectAttributes redirectAttributes) {
         try {
-            // Ensure the resourceName is set correctly
-            if (contact.getResourceName() == null || contact.getResourceName().isEmpty()) {
-                contact.setResourceName(id);
-            }
+            String resourceName = "people/" + id;
             
-            log.info("Updating contact with ID: {}, ResourceName: {}", id, contact.getResourceName());
-            Contact updatedContact = contactsService.updateContact(authorizedClient, id, contact);
+            // Get current contact to get its etag
+            Contact currentContact = contactsService.getContact(authorizedClient, resourceName);
+            contact.setEtag(currentContact.getEtag());
+            contact.setResourceName(resourceName);
+            
+            Contact updatedContact = contactsService.updateContact(authorizedClient, resourceName, contact);
             redirectAttributes.addFlashAttribute("message", "Contact '" + contact.getName() + "' updated successfully!");
-            log.info("Updated contact: {}", id);
             return "redirect:/contacts";
         } catch (Exception e) {
             log.error("Error updating contact {}: {}", id, e.getMessage(), e);
             redirectAttributes.addFlashAttribute("error", "Failed to update contact. Please try again.");
             redirectAttributes.addFlashAttribute("contact", contact);
-            return "redirect:/contacts/" + id + "/edit";
+            return "redirect:/contacts/people/" + id + "/edit";
         }
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/people/{id}")
     public String deleteContact(
             @PathVariable String id,
             @RegisteredOAuth2AuthorizedClient("google") OAuth2AuthorizedClient authorizedClient,
             RedirectAttributes redirectAttributes) {
         try {
-            log.info("Processing DELETE request for contact: {}", id);
-            
-            // Get contact name before deletion for better user feedback
-            Contact contact = contactsService.getContact(authorizedClient, id);
-            String contactName = contact != null ? contact.getName() : "Unknown";
-            
-            log.info("Deleting contact: {}, Name: {}", id, contactName);
-            contactsService.deleteContact(authorizedClient, id);
-            
-            log.info("Contact deleted successfully: {}", id);
-            redirectAttributes.addFlashAttribute("message", "Contact '" + contactName + "' deleted successfully!");
+            String resourceName = "people/" + id;
+            contactsService.deleteContact(authorizedClient, resourceName);
+            redirectAttributes.addFlashAttribute("message", "Contact deleted successfully!");
             return "redirect:/contacts";
         } catch (Exception e) {
             log.error("Error deleting contact {}: {}", id, e.getMessage(), e);
